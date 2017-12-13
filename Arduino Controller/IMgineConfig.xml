@@ -1,0 +1,129 @@
+<zapapp path="./">
+	<sequence>
+		<command> 
+			<exec>
+				rankSize=5;;;
+				JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').setGameConfig('./GuessMyNumber.js','asc','System.rankSize'));;;
+				splashText=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameConfig('splashText'));;;
+				splashPath=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameConfig('splashPath'));;;
+				aboutText=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameConfig('aboutText'));;;   
+				aboutPath=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameConfig('aboutPath'))				
+			</exec>
+		</command>
+  
+		<menu includeBackOption="false">
+			<image destroyAfterShow="true">System.splashPath</image>    
+			<text>System.splashText</text>
+
+			<sequence keycode="S" description="Start">
+				<command>
+					<exec>gameEndMessage=;;;
+					JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').startGameStatus('System.jidServer','System.jidClient'))
+					</exec>
+				</command>
+    
+				<sequence condition="'System.gameEndMessage'==''" isLooping="true">
+					<command>        
+						<exec>
+							currentMessage=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','message'));;;
+							currentImagePath=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','imagePath'));;;
+							currentPromptText=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','promptText'));;;
+							currentMenuText=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','menuText'));;;
+							currentOpt1=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','option1'));;;
+							currentOpt2=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','option2'));;;
+							currentOpt3=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','option3'));;;
+							currentOpt4=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','option4'));;;
+							currentOpt5=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','option5'))
+						</exec>
+					</command>
+										
+					<command condition="'System.currentMessage'!=''"> 
+						<text>System.currentMessage</text>        
+					</command>
+
+					<command condition="'System.currentImagePath'!=''"> 
+						<image >System.currentImagePath</image>  
+					</command>
+					
+					<prompt condition="'System.currentPromptText'!=''" 
+						execAfterConfirmation="currentCommand=System.currentMessage">
+						<text>System.currentPromptText</text>
+					</prompt>
+					
+					<menu condition="'System.currentOpt1'!=''" execIfOneInstrunction="false" includeBackOption="false"> 
+						<text>System.currentMenuText</text>   
+						<command description="System.currentOpt1" keycode="System.order">
+							<exec>currentCommand=option1;;;exit</exec>                            
+						</command>
+
+						<command condition="'System.currentOpt2'!=''" description="System.currentOpt2" keycode="System.order">
+							<exec>currentCommand=option2;;;exit</exec>                            
+						</command>
+
+						<command condition="'System.currentOpt3'!=''" description="System.currentOpt3" keycode="System.order">
+							<exec>currentCommand=option3;;;exit</exec>                            
+						</command>
+
+						<command condition="'System.currentOpt4'!=''" description="System.currentOpt4" keycode="System.order">
+							<exec>currentCommand=option4;;;exit</exec>                            
+						</command>
+						
+						<command condition="'System.currentOpt5'!=''" description="System.currentOpt5" keycode="System.order">
+							<exec>currentCommand=option5;;;exit</exec>                            
+						</command>
+					</menu>
+					
+					<command>        
+						<exec>
+							JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').updateGameStatus('System.jidServer','System.jidClient','System.currentCommand'))
+						</exec>
+					</command>
+					
+					<command>        
+						<exec>
+							gameEndMessage=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','endMessage'));;;
+							score=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','score'));;;
+							highScorePosition=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','highScorePosition'));;;
+							highScoreText=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','highScoreText'))
+						</exec>
+					</command>
+
+					<command condition="'System.gameEndMessage'!=''">
+						<text>System.gameEndMessage</text>                    
+					</command>
+
+					<prompt condition="'System.gameEndMessage'!='' &amp;&amp; 'System.highScoreText'!='' &amp;&amp;
+							System.highScorePosition&gt;=0 &amp;&amp; System.highScorePosition&lt;=System.rankSize" 
+							execAfterConfirmation="JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').storeHighScore('System.jidServer','System.jidClient','System.currentMessage'))">
+						<text>System.highScoreText</text>
+					</prompt>
+
+					<prompt condition="'System.gameEndMessage'!=''" execAfterConfirmation="tryAgain=System.currentMessage">
+						<text>Try again (Y-Yes/N-No):</text>
+					</prompt>
+
+					<command condition="'System.gameEndMessage'!='' &amp;&amp; ('System.tryAgain'=='Y') || ('System.tryAgain'=='y')">
+						<exec>gameEndMessage=;;;tryAgain=;;;
+							JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').startGameStatus('System.jidServer','System.jidClient'))
+						</exec>                    
+					</command>
+				</sequence>
+			</sequence>
+    
+			<sequence description="HighScores" keycode="H">			
+				<command>
+					<exec>highScores=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getHighScores('System.jidServer'))</exec>       
+				</command>
+				<command>
+					<text>System.highScores</text>    
+				</command>      				
+			</sequence>
+          
+			<command description="About" keycode="A">
+				<image>System.aboutPath</image>    
+				<text>System.aboutText</text>           
+			</command>
+		</menu>            
+	</sequence>
+</zapapp>
+

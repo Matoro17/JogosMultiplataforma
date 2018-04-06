@@ -3,30 +3,45 @@ var serialport = require("serialport");
 var Serialport = serialport.Serialport;
 
 
-var menos =  "FFE01F";
-var mais =  "FFA857";
-var EQ =  "FF906F";
-var mais100 =  "FF9867";
-var mais200 =  "FFB04F";
+var menos =  "menos";
+var mais =  "mais";
+var EQ =  "EQ";
+var mais100 =  "mais100";
+var mais200 =  "mais200";
 
-var zero	 =  "FF6897";
-var um		 =  "FF30CF";
-var dois	 =  "FF18E7";
-var tres	 =  "FF7A85";
-var quatro	 =  "FF10EF";
-var cinco	 =  "FF38C7";
-var seis	=  "FF5AA5";
-var sete 	 =  "FF42BD";
-var oito 	 =  "FF4AB5";
-var nove	 =  "FF52AD";
+var zero	 =  "zero";
+var um		 =  "um";
+var dois	 =  "dois";
+var tres	 =  "tres";
+var quatro	 =  "quatro";
+var cinco	 =  "cinco";
+var seis	=  "seis";
+var sete 	 =  "sete";
+var oito 	 =  "oito";
+var nove	 =  "nove";
 
-var mySerial = new serialport("/dev/ttyUSB0",{
+var mySerial = new serialport("COM3",{
 	baudRate: 9600,
-	parser: serialport.parsers.readline("\n")
+	parser: new serialport.parsers.Readline("\r\n")
 });
+
+function escrever(text){
+		setTimeout(function() {
+        	mySerial.write(text, function(err, results) {
+            console.log('err ' + err);
+            console.log('results ' + results);
+        });
+        
+    }, 3000);
+}
+
+
+
 
 mySerial.on("open", function(){
 	console.log("Porta Aberta");
+
+	escrever("porta aberta");
 
 	var jidServer = 'local';
 	var jidClient = 'myself';
@@ -52,7 +67,7 @@ mySerial.on("open", function(){
     var game = setInterval(function (){
     	console.log(currentCommand);
 		if (status == "start-menu"){
-			console.clear();	
+				
 			// <image destroyAfterShow="true">System.splashPath</image>    
 			console.log(splashText);
 			console.log('EQ -Start');
@@ -62,7 +77,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "start-menu" && currentCommand == "1"){
-			console.clear();
+			
 			require('./IMgineAdapter.js').startGameStatus(jidServer, jidClient);
 			
 			status = "render";
@@ -74,7 +89,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "render" && gameEndMessage == ""){		
-			console.clear();  
+			  
 			currentMessage = require('./IMgineAdapter.js').getGameStatus(jidServer, jidClient, 'message');
 			//currentImagePath=JS.EVAL(require('System.currentPath'+'IMgineAdapter.js').getGameStatus('System.jidServer','System.jidClient','imagePath'));;;
 			currentPromptText = require('./IMgineAdapter.js').getGameStatus(jidServer, jidClient, 'promptText');
@@ -111,7 +126,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "get-input" && currentCommand != ""){
-			console.clear();
+			
 
 			status = "update";
 			
@@ -130,7 +145,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "update" && currentCommand != ""){
-			console.clear();
+			
 			require('./IMgineAdapter.js').updateGameStatus(jidServer, jidClient, currentCommand);
 					  
 			gameEndMessage = require('./IMgineAdapter.js').getGameStatus(jidServer, jidClient, 'endMessage');
@@ -145,7 +160,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "game-end"){
-			console.clear();
+			
 			console.log(gameEndMessage);	
 			currentCommand = "";			
 
@@ -160,7 +175,7 @@ mySerial.on("open", function(){
 		}
 			
 		if (status == "highscore" && currentCommand != ""){
-			console.clear();
+			
 			require('./IMgineAdapter.js').storeHighScore(jidServer, jidClient, currentCommand);
 			currentCommand = "";
 			console.log('Try again (Y-Yes/N-No):');
@@ -168,7 +183,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "try-again" && currentCommand != ""){
-			console.clear();
+			
 			gameEndMessage = "";
 			currentCommand = "";
 			
@@ -182,7 +197,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "start-menu" && currentCommand == "2"){
-			console.clear();
+			
 			console.log(require('./IMgineAdapter.js').getHighScores(jidServer));
 			console.log('EQ -Start');
 			console.log(' + -score');
@@ -191,7 +206,7 @@ mySerial.on("open", function(){
 		}
 		
 		if (status == "start-menu" && currentCommand == "3"){
-			console.clear();
+			
 			console.log(aboutText);
 			console.log('EQ -Start');
 			console.log(' + -score');
@@ -203,68 +218,69 @@ mySerial.on("open", function(){
 
 	
 	mySerial.on("data", function(dados){
+		
 		if (status == "get-input") {
-			if (dados.trim() == um.trim()) {
+			if (dados == um) {
 				input = input + 1;
 				console.log(input);
 			}
-			else if (dados.trim() == dois.trim()) {
+			else if (dados == dois) {
 				input = input + 2;
 				console.log(input);
 			}
-			else if (dados.trim() == tres.trim()) {
+			else if (dados == tres) {
 				input = input + 3;
 				console.log(input);
 			}
-			else if (dados.trim() == quatro.trim()) {
+			else if (dados == quatro) {
 				input = input + 4;
 				console.log(input);
 			}
-			else if (dados.trim() == cinco.trim()) {
+			else if (dados == cinco) {
 				input = input + 5;
 				console.log(input);
 			}
-			else if (dados.trim() == seis.trim()) {
+			else if (dados == seis) {
 				input = input + 6;
 				console.log(input);
 			}
-			else if (dados.trim() == sete.trim()) {
+			else if (dados == sete) {
 				input = input + 7;
 				console.log(input);
 			}
-			else if (dados.trim() == oito.trim()) {
+			else if (dados == oito) {
 				input = input + 8;
 				console.log(input);
 			}
-			else if (dados.trim() == nove.trim()) {
+			else if (dados == nove) {
 				input = input + 9;
 				console.log(input);
 			}
-			else if (dados.trim() == zero.trim()) {
+			else if (dados == zero) {
 				input = input + 0;
 				console.log(input);
 			}
-			else if (dados.trim() == EQ.trim()){
+			else if (dados == EQ){
 				currentCommand = input;
 				input = "";
 			}
 
 		}
 		else{
-			
-			if (EQ.trim() == dados.trim()) {
+			console.log(dados);
+			if (EQ == dados) {
 				currentCommand = "1";
 			}
-			else if(dados.trim() == mais.trim()){
+			else if(dados == mais){
 				currentCommand = "2";
 			}
-			else if(dados.trim() == menos.trim()){
+			else if(dados == menos){
 				currentCommand = "3";
 			}
-			else if(dados.trim() == quatro.trim()){
+			else if(dados == quatro){
 				currentCommand = "4";
 			}
-			else if(dados.trim() == cinco.trim()){
+			else if(dados == cinco){
 				currentCommand = "5";
 			}
 

@@ -1,5 +1,4 @@
-#include <IRremote.h>
-
+#include <IRremote2.h>
 const int RECV_PIN = 3;
 IRrecv irrecv(RECV_PIN);
 decode_results results;

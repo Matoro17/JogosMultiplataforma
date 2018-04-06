@@ -2,6 +2,11 @@
 LCDShield lcd;
 int buttonPins[3] = {A0, A1, A2};  //You can add A3 ,A4 for button
 
+void show(String palavra){
+  lcd.clear(WHITE);
+  lcd.setStr(palavra.c_str(), 0, 0, BLACK, WHITE);
+}
+
 void setup() {
   Serial.begin(9600);
   // put your setup code here, to run once:
@@ -19,12 +24,12 @@ void setup() {
 }
 //Colunas 16, linhas 16
 void loop() {
-  // put your main code here, to run repeatedly:
-  lcd.setStr("Lorem inpisilum ",0,0,BLACK, WHITE);
+  
+  if (Serial.available() > 0) {
+    String palavra = Serial.readString();
+    show(palavra);
+  }
 }
 
-void show(char palavra){
-  lcd.clear(WHITE);
-  lcd.setStr(palavra, 0, 0, BLACK, WHITE);
-}
+
 

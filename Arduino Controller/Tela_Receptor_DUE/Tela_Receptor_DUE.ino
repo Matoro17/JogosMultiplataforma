@@ -22,6 +22,7 @@ void setup() {
   tft.setRotation(2);
   //Setup receptor
   Serial.begin(9600);
+  Serial.setTimeout(50);
   irrecv.enableIRIn();
   irrecv.blink13(true);
   
@@ -40,12 +41,13 @@ void loop() {
   if (Serial.available()) {
     string = Serial.readString();
   }
-  tft.fillScreen(TFT_WHITE);
-  tft.setCursor(0, 0, 2);
-  tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    
-  tft.print(string);
-  delay(500);
+  if(sizeof string > 1){
+    tft.fillScreen(TFT_WHITE);
+    tft.setCursor(0, 0, 2);
+    tft.setTextColor(TFT_WHITE,TFT_BLACK);
+    tft.print(string);
+  }
+  delay(50);
   
 }
 

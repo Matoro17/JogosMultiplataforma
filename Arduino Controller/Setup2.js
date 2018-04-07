@@ -26,12 +26,10 @@ var mySerial = new serialport("COM3",{
 });
 
 
-function escrever (data, callback) {
+function escrever(data, callback) {
 	setTimeout(function() {
-		mySerial.pause();
 		mySerial.write(data + "\n");
 		mySerial.drain(callback);
-		mySerial.resume();
 	},50);
 	
 }
@@ -41,10 +39,8 @@ function escrever (data, callback) {
 
 
 mySerial.on("open", function(){
-	escrever("Porta Aberta");
-
 	escrever("porta aberta");
-
+	mySerial.pause();
 	var jidServer = 'local';
 	var jidClient = 'myself';
   
@@ -81,7 +77,7 @@ mySerial.on("open", function(){
 		if (status == "start-menu" && currentCommand == "1"){
 			
 			require('./IMgineAdapter.js').startGameStatus(jidServer, jidClient);
-			
+			mySerial.pause();
 			status = "render";
 			
 			gameEndMessage = "";	
@@ -220,6 +216,7 @@ mySerial.on("open", function(){
 
 	
 	mySerial.on("data", function(dados){
+		mySerial.resume();
 		escrever(dados);
 		if (status == "get-input") {
 			if (dados == um) {

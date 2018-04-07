@@ -5,7 +5,7 @@ var Serialport = serialport.Serialport;
 
 var menos =  "menos";
 var mais =  "mais";
-var EQ =  "EQ";
+var EQ =  "EQ_";
 var mais100 =  "mais100";
 var mais200 =  "mais200";
 
@@ -22,24 +22,26 @@ var nove	 =  "nove";
 
 var mySerial = new serialport("COM3",{
 	baudRate: 9600,
-	parser: new serialport.parsers.Readline("\r\n")
+	parser: new serialport.parsers.Readline("\n")
 });
 
-function escrever(text){
-		setTimeout(function() {
-        	mySerial.write(text, function(err, results) {
-            console.log('err ' + err);
-            console.log('results ' + results);
-        });
-        
-    }, 3000);
+
+function escrever (data, callback) {
+	setTimeout(function() {
+		mySerial.pause();
+		mySerial.write(data + "\n");
+		mySerial.drain(callback);
+		mySerial.resume();
+	},50);
+	
 }
 
 
 
 
+
 mySerial.on("open", function(){
-	console.log("Porta Aberta");
+	escrever("Porta Aberta");
 
 	escrever("porta aberta");
 
@@ -65,14 +67,14 @@ mySerial.on("open", function(){
 	var input = "";
 	
     var game = setInterval(function (){
-    	console.log(currentCommand);
+    	escrever(currentCommand);
 		if (status == "start-menu"){
 				
 			// <image destroyAfterShow="true">System.splashPath</image>    
-			console.log(splashText);
-			console.log('EQ -Start');
-			console.log(' + -score');
-			console.log(' - -About');	
+			escrever(splashText);
+			escrever('EQ -Start');
+			escrever(' + -score');
+			escrever(' - -About');	
 			//currentCommand = "";			
 		}
 		
@@ -100,7 +102,7 @@ mySerial.on("open", function(){
 			currentOpt4 = require('./IMgineAdapter.js').getGameStatus(jidServer, jidClient, 'option4');
 			currentOpt5 = require('./IMgineAdapter.js').getGameStatus(jidServer, jidClient, 'option5');
 					  
-			if (currentMessage != '') console.log(currentMessage);
+			if (currentMessage != '') escrever(currentMessage);
 			/*
 			<command condition="'System.currentImagePath'!=''"> 
 			  <image >System.currentImagePath</image>  
@@ -108,16 +110,16 @@ mySerial.on("open", function(){
 			*/
 			
 			if (currentPromptText != "") 
-				console.log(currentPromptText);
+				escrever(currentPromptText);
 			
 			if (currentOpt1 != '') {
-				console.log(currentMenuText);   
+				escrever(currentMenuText);   
 					
-				console.log("1- "+currentOpt1);  
-				if (currentOpt2 != '') console.log("2- "+currentOpt2);
-				if (currentOpt3 != '') console.log("3- "+currentOpt3);
-				if (currentOpt4 != '') console.log("4- "+currentOpt4);
-				if (currentOpt5 != '') console.log("5- "+currentOpt5);
+				escrever("1- "+currentOpt1);  
+				if (currentOpt2 != '') escrever("2- "+currentOpt2);
+				if (currentOpt3 != '') escrever("3- "+currentOpt3);
+				if (currentOpt4 != '') escrever("4- "+currentOpt4);
+				if (currentOpt5 != '') escrever("5- "+currentOpt5);
 			}
 			
 			currentCommand = "";
@@ -137,7 +139,7 @@ mySerial.on("open", function(){
 				else if (currentCommand == "4") currentCommand = currentOpt4;
 				else if (currentCommand == "5") currentCommand = currentOpt5;
 				else {        
-					console.log("Opção inválida!!");
+					escrever("Opção inválida!!");
 					currentCommand = ""; 
 					status = "getInput";
 				}
@@ -161,15 +163,15 @@ mySerial.on("open", function(){
 		
 		if (status == "game-end"){
 			
-			console.log(gameEndMessage);	
+			escrever(gameEndMessage);	
 			currentCommand = "";			
 
 			if (gameEndMessage != '' && highScoreText != '' && highScorePosition >= 0 && highScorePosition <= rankSize){
-				console.log(highScoreText);				
+				escrever(highScoreText);				
 				status = "highscore";
 			}
 			else {
-				console.log('Try again (Y-Yes/N-No):');
+				escrever('Try again (Y-Yes/N-No):');
 				status = "try-again";
 			}
 		}
@@ -178,7 +180,7 @@ mySerial.on("open", function(){
 			
 			require('./IMgineAdapter.js').storeHighScore(jidServer, jidClient, currentCommand);
 			currentCommand = "";
-			console.log('Try again (Y-Yes/N-No):');
+			escrever('Try again (Y-Yes/N-No):');
 			status = "try-again";
 		}
 		
@@ -198,19 +200,19 @@ mySerial.on("open", function(){
 		
 		if (status == "start-menu" && currentCommand == "2"){
 			
-			console.log(require('./IMgineAdapter.js').getHighScores(jidServer));
-			console.log('EQ -Start');
-			console.log(' + -score');
-			console.log(' - -About');	
+			escrever(require('./IMgineAdapter.js').getHighScores(jidServer));
+			escrever('EQ -Start');
+			escrever(' + -score');
+			escrever(' - -About');	
 			currentCommand = "";	
 		}
 		
 		if (status == "start-menu" && currentCommand == "3"){
 			
-			console.log(aboutText);
-			console.log('EQ -Start');
-			console.log(' + -score');
-			console.log(' - -About');	
+			escrever(aboutText);
+			escrever('EQ -Start');
+			escrever(' + -score');
+			escrever(' - -About');	
 			currentCommand = "";	
 		}
 
@@ -218,47 +220,47 @@ mySerial.on("open", function(){
 
 	
 	mySerial.on("data", function(dados){
-		
+		escrever(dados);
 		if (status == "get-input") {
 			if (dados == um) {
 				input = input + 1;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == dois) {
 				input = input + 2;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == tres) {
 				input = input + 3;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == quatro) {
 				input = input + 4;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == cinco) {
 				input = input + 5;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == seis) {
 				input = input + 6;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == sete) {
 				input = input + 7;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == oito) {
 				input = input + 8;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == nove) {
 				input = input + 9;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == zero) {
 				input = input + 0;
-				console.log(input);
+				escrever(input);
 			}
 			else if (dados == EQ){
 				currentCommand = input;
@@ -267,7 +269,7 @@ mySerial.on("open", function(){
 
 		}
 		else{
-			console.log(dados);
+			escrever(dados);
 			if (EQ == dados) {
 				currentCommand = "1";
 			}

@@ -3,7 +3,7 @@
 
  Autor: Gabriel Silva de Azevedo
  */
-
+#include <string.h>
 #include <IRremote2.h>
 #include <TFT_HX8357_Due.h>
 
@@ -14,6 +14,7 @@ TFT_HX8357_Due tft = TFT_HX8357_Due();
 const int RECV_PIN = 3;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
+String string="";
 
 void setup() {
   //Setup tela
@@ -23,78 +24,83 @@ void setup() {
   Serial.begin(9600);
   irrecv.enableIRIn();
   irrecv.blink13(true);
+  
 }
 
 void loop() {
   if (irrecv.decode(&results)){
-
-        Serial.println(results.value,HEX);
-        String str = buto((results.value,HEX));
-        
-        Serial.print(str);
+        unsigned int value = results.value;
+        String str = buto(value);
+        if(sizeof str > 1){
+          Serial.println(str);
+        }
         irrecv.resume();
   }
   
-  if (Serial.available() > 0) {
-    tft.fillScreen(random(0xFFFF));
-    tft.setCursor(0, 0, 2);
-    tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    String string = Serial.readString();
-    tft.println(string);
+  if (Serial.available()) {
+    string = Serial.readString();
   }
-  delay(50);
+  tft.fillScreen(TFT_WHITE);
+  tft.setCursor(0, 0, 2);
+  tft.setTextColor(TFT_WHITE,TFT_BLACK);
+    
+  tft.print(string);
+  delay(500);
   
 }
-String buto(int code){
 
-  
-  if(code == 0xFFE01F){
+String nada(){
+  return "nada";
+}
+
+String buto(unsigned int value){
+  if(value == 0xFFE01F){
     return "menos";
   }
-  else if(code == 'FFA857'){
+  else if(value == 0xFFA857){
     return "mais";
   }
-  else if(code == 'FF906F'){
-    return "EQ";
+  else if(value == 0xFF906F){
+    return "EQ_";
   }
-  else if(code == 'FF9867'){
+  else if(value == 0xFF9867){
     return "mais100";
   }
-  else if(code == 'FFB04F'){
+  else if(value == 0xFFB04F){
     return "mais200";
   }
-  else if(code == 'FF6897'){
+  else if(value == 0xFF6897){
     return "zero";
   }
-  else if(code == 'FF30CF'){
+  else if(value == 0xFF30CF){
     return "um";
   }
-  else if(code == 'FF18E7'){
+  else if(value == 0xFF18E7){
     return "dois";
   }
-  else if(code == 'FF7A85'){
+  else if(value == 0xFF7A85){
     return "tres";
   }
-  else if(code == 'FF10EF'){
+  else if(value == 0xFF10EF){
     return "quatro";
   }
-  else if(code == 'FF38C7'){
+  else if(value == 0xFF38C7){
     return "cinco";
   }
-  else if(code == 'FF5AA5'){
+  else if(value == 0xFF5AA5){
     return "seis";
   }
-  else if(code == 'FF42BD'){
+  else if(value == 0xFF42BD){
     return "sete";
   }
-  else if(code == 'FF4AB5'){
+  else if(value == 0xFF4AB5){
     return "oito";
   }
-  else if(code == 'FF52AD'){
+  else if(value == 0xFF52AD){
     return "nove";
   }
   else{
-    return "nada";
+    return "0";
   }
 
 }

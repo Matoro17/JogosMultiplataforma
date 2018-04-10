@@ -40,14 +40,14 @@ void loop() {
   
   if (Serial.available()) {
     string = Serial.readString();
+    if(sizeof string > 1){
+      tft.fillScreen(TFT_WHITE);
+      tft.setCursor(0, 0, 2);
+      tft.setTextColor(TFT_WHITE,TFT_BLACK);
+      tft.print(string);
+    }
   }
-  if(sizeof string > 1){
-    tft.fillScreen(TFT_WHITE);
-    tft.setCursor(0, 0, 2);
-    tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    tft.print(string);
-  }
-  delay(50);
+  
   
 }
 

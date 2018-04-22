@@ -1,21 +1,17 @@
 var serialport = require("serialport");
 var Serialport = serialport.Serialport;
 
-var espera = function(){
-	console.log("wait");
-}
+const Readline = require('parser-readline')
+
 
 
 var mySerial = new serialport("COM3",{
 	baudRate: 9600
 });
 
-
-
-
-
-
-
-mySerial.on("data", function(dados){
-	console.log(dados);
-});
+const parser = mySerial.pipe(new Readline({ delimiter: '\r\n' }));
+parser.on('data', console.log);
+/*
+mySerial.on("readable", function(){
+	console.log(mySerial.read().toString());
+});*/

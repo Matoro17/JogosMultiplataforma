@@ -15,6 +15,8 @@ const int RECV_PIN = 3;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 String string="";
+String buff="";
+
 
 void setup() {
   //Setup tela
@@ -40,11 +42,14 @@ void loop() {
   
   if (Serial.available()) {
     string = Serial.readString();
-    if(sizeof string > 1){
-      tft.fillScreen(TFT_WHITE);
-      tft.setCursor(0, 0, 2);
-      tft.setTextColor(TFT_WHITE,TFT_BLACK);
-      tft.print(string);
+    if(string != buff){
+      buff = string;
+      if(sizeof string > 1){
+        tft.fillScreen(TFT_WHITE);
+        tft.setCursor(0, 0, 2);
+        tft.setTextColor(TFT_BLACK,TFT_WHITE);
+        tft.print(string);
+      }
     }
   }
   
